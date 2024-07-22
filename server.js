@@ -10,6 +10,9 @@ const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
 
+const connectDB = require('./db/connect.js');
+const createModel = require('./models/createModel.js');
+
 let app = express();
 
 app.use('/public', express.static(process.cwd() + '/public'));
@@ -37,7 +40,7 @@ app.route('/')
 fccTestingRoutes(app);
 
 //Routing for API 
-apiRoutes(app);  
+apiRoutes(app, createModel);
     
 //404 Not Found Middleware
 app.use(function(req, res, next) {
@@ -47,19 +50,29 @@ app.use(function(req, res, next) {
 });
 
 //Start our server and tests!
-const listener = app.listen(process.env.PORT || 3000, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
-  if(process.env.NODE_ENV==='test') {
-    console.log('Running Tests...');
-    setTimeout(function () {
-      try {
-        runner.run();
-      } catch(e) {
-        console.log('Tests are not valid:');
-        console.error(e);
+async function start() {
+  try {
+    await connectDB();
+  
+    const listener = app.listen(process.env.PORT || 3000, function () {
+      console.log('Your app is listening on port ' + listener.address().port);
+      if(process.env.NODE_ENV==='test') {
+        console.log('Running Tests...');
+        setTimeout(function () {
+          try {
+            runner.run();
+          } catch(e) {
+            console.log('Tests are not valid:');
+            console.error(e);
+          }
+        }, 3500);
       }
-    }, 3500);
+    });
+  } catch(err) {
+    console.log(err);
   }
-});
+}
+
+start();
 
 module.exports = app; //for testing
