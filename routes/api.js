@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (app) {
+module.exports = function (app, createModel) {
 
   app.route('/api/issues/:project')
   
@@ -11,10 +11,16 @@ module.exports = function (app) {
       res.type('text').send('Test');
     })
     
-    .post(function (req, res){
+    .post(async function (req, res){
       let project = req.params.project;
       console.log(project); 
-      
+      console.log(req.body);
+
+      const Project = createModel(project);
+      let issue = new Project(req.body);
+      await issue.save();
+
+      res.json({test:'test'});
     })
     
     .put(function (req, res){
