@@ -46,9 +46,30 @@ module.exports = function (app, getModel) {
       res.json(issue);
     })
     
-    .put(function (req, res){
+    .put(async function (req, res){
       let project = req.params.project;
+      console.log(req.body);
       
+      let { _id, ...update } = req.body;
+      update.updated_on = new Date().toISOString();
+
+      Object.keys(update).forEach((item) => {
+        if (!update[item]) delete update[item];
+      });
+      
+      if (!_id) return res.json({error:'missing _id'});
+      if (Object.values(update).every(element => !element)) return res.json({error:'no update field(s) sent', '_id':_id});
+
+      try {
+        const Project = getModel(project);
+
+        await Project.findOneAndUpdate({'_id':_id}, update);
+  
+        res.json({result:'succesfully updated', '_id':req.body._id});
+      } catch (err) {
+        console.log(err);
+        res.json({error:'could not update', '_id':_id});
+      }
     })
     
     .delete(function (req, res){
