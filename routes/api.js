@@ -21,7 +21,7 @@ module.exports = function (app, getModel) {
       let issue = new Project(req.body);
       await issue.save();
 
-      res.json({test:'test'});
+      res.json(issue);
     })
     
     .put(function (req, res){
