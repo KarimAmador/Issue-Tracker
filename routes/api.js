@@ -1,13 +1,13 @@
 'use strict';
 
-module.exports = function (app, createModel) {
+module.exports = function (app, getModel) {
 
   app.route('/api/issues/:project')
   
     .get(async function (req, res){
       let project = req.params.project;
 
-      const Project = createModel(project);
+      const Project = getModel(project);
       let issues = await Project.find().select({__v: 0}).exec();
 
       res.json(issues);
@@ -17,7 +17,7 @@ module.exports = function (app, createModel) {
       let project = req.params.project;
       console.log(req.body);
 
-      const Project = createModel(project);
+      const Project = getModel(project);
       let issue = new Project(req.body);
       await issue.save();
 
