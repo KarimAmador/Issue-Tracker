@@ -6,11 +6,29 @@ module.exports = function (app, getModel) {
   
     .get(async function (req, res){
       let project = req.params.project;
+      let query = req.query;
+      let issues;
 
-      const Project = getModel(project);
-      let issues = await Project.find().select({__v: 0}).exec();
+      if (query) {
+        switch (query.open) {
+          case 'true':
+            query.open = true
+            break;
+          case 'false':
+            query.open = false;
+            break;
+        }
+      }
 
-      res.json(issues);
+      try {
+        const Project = getModel(project);
+        issues = await Project.find(query ? query : undefined).select({__v: 0}).exec();
+  
+        res.json(issues);
+      } catch(err) {
+        console.log(err);
+        res.send();
+      }
     })
     
     .post(async function (req, res){
