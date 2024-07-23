@@ -4,11 +4,14 @@ module.exports = function (app, createModel) {
 
   app.route('/api/issues/:project')
   
-    .get(function (req, res){
+    .get(async function (req, res){
       let project = req.params.project;
       console.log(project);
 
-      res.type('text').send('Test');
+      const Project = createModel(project);
+      let issues = await Project.find().select({__v: 0}).exec();
+
+      res.json(issues);
     })
     
     .post(async function (req, res){
