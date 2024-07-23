@@ -51,18 +51,18 @@ module.exports = function (app, getModel) {
       console.log(req.body);
       
       let { _id, ...update } = req.body;
-      update.updated_on = new Date().toISOString();
 
       Object.keys(update).forEach((item) => {
         if (!update[item]) delete update[item];
       });
       
       if (!_id) return res.json({error:'missing _id'});
-      if (Object.values(update).every(element => !element)) return res.json({error:'no update field(s) sent', '_id':_id});
+      if (!Object.keys(update).length) return res.json({error:'no update field(s) sent', '_id':_id});
 
       try {
         const Project = getModel(project);
 
+        update.updated_on = new Date().toISOString();
         await Project.findOneAndUpdate({'_id':_id}, update);
   
         res.json({result:'succesfully updated', '_id':req.body._id});
