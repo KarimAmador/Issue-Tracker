@@ -63,9 +63,11 @@ module.exports = function (app, getModel) {
         const Project = getModel(project);
 
         update.updated_on = new Date().toISOString();
-        await Project.findOneAndUpdate({'_id':_id}, update);
-  
-        res.json({result:'succesfully updated', '_id':req.body._id});
+        let result = await Project.findOneAndUpdate({'_id':_id}, update);
+        
+        if (!result) throw new Error('could not update');
+
+        res.json({result:'successfully updated', '_id':req.body._id});
       } catch (err) {
         console.log(err);
         res.json({error:'could not update', '_id':_id});
