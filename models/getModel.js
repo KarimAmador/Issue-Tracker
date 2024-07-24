@@ -36,8 +36,8 @@ const projectSchema = new Schema({
   }
 });
 
-const createModel = (projectName) => {
+const getModel = (projectName) => {
   return model('project', projectSchema, projectName);
 }
 
-module.exports = createModel;
+module.exports = getModel;
