@@ -66,7 +66,7 @@ module.exports = function (app, getModel) {
         let result = await Project.findOneAndUpdate({'_id':_id}, update);
         
         if (!result) throw new Error('could not update');
-
+        
         res.json({result:'successfully updated', '_id':req.body._id});
       } catch (err) {
         console.log(err);
@@ -74,9 +74,23 @@ module.exports = function (app, getModel) {
       }
     })
     
-    .delete(function (req, res){
+    .delete(async function (req, res){
       let project = req.params.project;
-      
+      console.log(req.body);
+
+      let _id = req.body._id;
+
+      if (!_id) return res.json({error: 'missing _id'});
+
+      try {
+        const Project = getModel(project);
+
+        await Project.findByIdAndDelete(_id);
+
+        res.json({result:'successfully deleted', '_id':_id})
+      } catch(err) {
+        res.json({error:'could not delete', '_id':_id});
+      }
     });
     
 };
