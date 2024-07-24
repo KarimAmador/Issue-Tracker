@@ -85,10 +85,13 @@ module.exports = function (app, getModel) {
       try {
         const Project = getModel(project);
 
-        await Project.findByIdAndDelete(_id);
+        let result = await Project.findByIdAndDelete(_id);
+
+        if (!result) throw new Error('could not delete');
 
         res.json({result:'successfully deleted', '_id':_id})
       } catch(err) {
+        console.log(err);
         res.json({error:'could not delete', '_id':_id});
       }
     });
