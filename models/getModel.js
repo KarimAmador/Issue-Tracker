@@ -21,13 +21,19 @@ const projectSchema = new Schema({
     type: String,
     required: true
   },
-  assigned_to: String,
+  assigned_to: {
+    type: String,
+    default: ''
+  },
   open: {
     type: Boolean,
     required: true,
     default: true
   },
-  status_text: String
+  status_text: {
+    type: String,
+    default: ''
+  }
 });
 
 const createModel = (projectName) => {
